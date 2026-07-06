@@ -2,13 +2,32 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from app import db
+from app import db, claude_client
 from app.claude_client import summarize_batch
 from app.feeds import research, market, synthesis
+from app.text_utils import strip_html, truncate
 
 logger = logging.getLogger("niche.scheduler")
 
 scheduler = AsyncIOScheduler()
+
+
+def _passthrough_structure(items: list[dict]) -> list[dict]:
+    """No-LLM fallback: use the raw title/description as-is so the feed still fills
+    without an ANTHROPIC_API_KEY. No category, why-it-matters, or investor extraction."""
+    structured = []
+    for i, item in enumerate(items):
+        structured.append(
+            {
+                "index": i,
+                "headline": truncate(strip_html(item["title"]), 120),
+                "summary": truncate(strip_html(item.get("raw_summary", "")), 280) or item["title"],
+                "category": None,
+                "why_it_matters": None,
+                "mentioned_investors": [],
+            }
+        )
+    return structured
 
 
 async def _ingest_feed(fetch_fn, feed_name: str) -> int:
@@ -17,7 +36,10 @@ async def _ingest_feed(fetch_fn, feed_name: str) -> int:
     if not unseen:
         return 0
 
-    structured = summarize_batch(unseen, feed_name)
+    if claude_client.is_configured():
+        structured = summarize_batch(unseen, feed_name)
+    else:
+        structured = _passthrough_structure(unseen)
     by_index = {s["index"]: s for s in structured}
 
     inserted = 0
@@ -63,6 +85,10 @@ async def hourly_job():
 
 async def daily_job():
     from app.telegram_bot import notify
+
+    if not claude_client.is_configured():
+        logger.info("Skipping daily synthesis — ANTHROPIC_API_KEY not set")
+        return
 
     try:
         result = synthesis.run_daily_synthesis()

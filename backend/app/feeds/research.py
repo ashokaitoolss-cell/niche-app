@@ -4,7 +4,7 @@ import httpx
 from app.feeds.rss_common import fetch_rss
 
 ARXIV_CATEGORIES = ["cs.CL", "cs.AI", "cs.AR"]
-ARXIV_API = "http://export.arxiv.org/api/query"
+ARXIV_API = "https://export.arxiv.org/api/query"
 
 HN_ALGOLIA_API = "https://hn.algolia.com/api/v1/search_by_date"
 HN_QUERY = "AI OR LLM OR semiconductor"
@@ -26,7 +26,7 @@ async def fetch_arxiv(hours: int = 2) -> list[dict]:
         "sortOrder": "descending",
         "max_results": 30,
     }
-    async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
         resp = await client.get(ARXIV_API, params=params)
         resp.raise_for_status()
 
@@ -49,7 +49,7 @@ async def fetch_arxiv(hours: int = 2) -> list[dict]:
 
 async def fetch_hn(points_min: int = 20) -> list[dict]:
     params = {"query": HN_QUERY, "tags": "story", "numericFilters": f"points>{points_min}"}
-    async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
         resp = await client.get(HN_ALGOLIA_API, params=params)
         resp.raise_for_status()
         data = resp.json()

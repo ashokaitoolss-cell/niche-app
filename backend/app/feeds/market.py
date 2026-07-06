@@ -45,7 +45,7 @@ async def fetch_product_hunt(hours: int = 24) -> list[dict]:
 
     posted_after = (datetime.now(timezone.utc) - timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
     query = PRODUCT_HUNT_QUERY % posted_after
-    async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
         resp = await client.post(
             PRODUCT_HUNT_API,
             json={"query": query},
@@ -87,7 +87,7 @@ async def fetch_crunchbase(days: int = 1) -> list[dict]:
         ],
         "limit": 25,
     }
-    async with httpx.AsyncClient(timeout=20) as client:
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
         resp = await client.post(
             CRUNCHBASE_SEARCH_API,
             json=payload,

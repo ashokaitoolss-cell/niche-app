@@ -5,7 +5,7 @@ from typing import Optional
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-from app import db
+from app import db, claude_client
 from app.config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 from app.feeds.synthesis import run_daily_synthesis
 
@@ -58,6 +58,11 @@ async def cmd_idea(update: Update, context: ContextTypes.DEFAULT_TYPE):
     today = date.today().isoformat()
     idea = db.get_niche_idea(today)
     if idea is None:
+        if not claude_client.is_configured():
+            await update.message.reply_text(
+                "Niche Ideas needs an ANTHROPIC_API_KEY to cross-reference the feeds — not set yet."
+            )
+            return
         await update.message.reply_text("Generating today's idea, one moment...")
         result = run_daily_synthesis()
         if result is None:

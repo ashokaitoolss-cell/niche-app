@@ -17,6 +17,10 @@ def get_client() -> Anthropic:
     return _client
 
 
+def is_configured() -> bool:
+    return bool(ANTHROPIC_API_KEY)
+
+
 SUMMARIZE_TOOL = {
     "name": "record_summaries",
     "description": "Record structured summaries for a batch of raw feed items.",
