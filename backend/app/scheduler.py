@@ -104,7 +104,11 @@ async def daily_job():
 
 
 def start_scheduler():
-    scheduler.add_job(hourly_job, "interval", hours=1, id="hourly_ingest")
+    from datetime import datetime, timezone
+
+    scheduler.add_job(
+        hourly_job, "interval", hours=1, id="hourly_ingest", next_run_time=datetime.now(timezone.utc)
+    )
     scheduler.add_job(daily_job, "cron", hour=8, minute=0, id="daily_synthesis")
     scheduler.start()
 
