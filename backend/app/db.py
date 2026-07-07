@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS summaries (
     summary TEXT NOT NULL,
     source_url TEXT NOT NULL,
     source_label TEXT NOT NULL,
+    image_url TEXT,
     why_it_matters TEXT,
     mentioned_investors TEXT,
     created_at TEXT NOT NULL
@@ -111,6 +112,7 @@ def insert_summary(
     source_url: str,
     source_label: str,
     category: Optional[str] = None,
+    image_url: Optional[str] = None,
     why_it_matters: Optional[str] = None,
     mentioned_investors: Optional[list[str]] = None,
 ) -> int:
@@ -118,8 +120,8 @@ def insert_summary(
         cur = conn.execute(
             """INSERT INTO summaries
                (feed, category, headline, summary, source_url, source_label,
-                why_it_matters, mentioned_investors, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                image_url, why_it_matters, mentioned_investors, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 feed,
                 category,
@@ -127,6 +129,7 @@ def insert_summary(
                 summary,
                 source_url,
                 source_label,
+                image_url,
                 why_it_matters,
                 json.dumps(mentioned_investors or []),
                 now_iso(),

@@ -54,6 +54,7 @@ async def _ingest_feed(fetch_fn, feed_name: str) -> int:
             source_url=item["url"],
             source_label=item["source"],
             category=s.get("category"),
+            image_url=item.get("image_url"),
             why_it_matters=s.get("why_it_matters"),
             mentioned_investors=s.get("mentioned_investors", []),
         )

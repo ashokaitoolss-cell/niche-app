@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { Summary } from "../types";
 import type { FeedTheme } from "../feedTheme";
@@ -15,6 +15,9 @@ interface Props {
 
 const Card = forwardRef<HTMLDivElement, Props>(
   ({ item, theme, expanded, style, onPointerDown, onPointerMove, onPointerUp }, ref) => {
+    const [imgFailed, setImgFailed] = useState(false);
+    const showImage = Boolean(item.image_url) && !imgFailed;
+
     return (
       <div
         ref={ref}
@@ -28,8 +31,22 @@ const Card = forwardRef<HTMLDivElement, Props>(
           ...style,
         }}
       >
-        <div style={{ height: 5, background: theme.accent, flexShrink: 0 }} />
-        <div className="flex-1 flex flex-col justify-end p-5 overflow-y-auto">
+        {showImage && (
+          <img
+            src={item.image_url!}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={() => setImgFailed(true)}
+          />
+        )}
+        {showImage && (
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(10,10,8,0.92) 0%, rgba(10,10,8,0.55) 42%, rgba(10,10,8,0.05) 68%)" }}
+          />
+        )}
+        <div style={{ height: 5, background: theme.accent, flexShrink: 0, position: "relative", zIndex: 2 }} />
+        <div className="flex-1 flex flex-col justify-end p-5 overflow-y-auto relative z-10">
           <p className="font-display font-normal text-[19px] leading-tight text-paper mb-2.5">
             {item.headline}
           </p>

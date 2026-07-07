@@ -8,6 +8,7 @@ export interface Summary {
   summary: string;
   source_url: string;
   source_label: string;
+  image_url: string | null;
   why_it_matters: string | null;
   mentioned_investors: string; // JSON-encoded string array
   created_at: string;

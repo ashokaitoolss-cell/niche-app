@@ -81,16 +81,16 @@ export default function CardStack({ feed }: Props) {
   }
 
   if (loading) {
-    return <div className="h-[420px] flex items-center justify-center text-paper/50 text-sm">Loading feed...</div>;
+    return <div className="h-full flex items-center justify-center text-paper/50 text-sm">Loading feed...</div>;
   }
 
   if (error) {
-    return <div className="h-[420px] flex items-center justify-center text-paper/50 text-sm px-6 text-center">{error}</div>;
+    return <div className="h-full flex items-center justify-center text-paper/50 text-sm px-6 text-center">{error}</div>;
   }
 
   if (items.length === 0) {
     return (
-      <div className="h-[420px] flex items-center justify-center text-paper/50 text-sm px-6 text-center">
+      <div className="h-full flex items-center justify-center text-paper/50 text-sm px-6 text-center">
         Nothing new in this feed yet — check back after the next hourly run.
       </div>
     );
@@ -100,8 +100,8 @@ export default function CardStack({ feed }: Props) {
   const opacity = 1 - Math.min(Math.abs(drag.x) / 500, 0.4);
 
   return (
-    <div>
-      <div className="relative" style={{ height: 420 }}>
+    <div className="h-full flex flex-col">
+      <div className="flex-1 relative min-h-0">
         <div
           className="absolute rounded-[20px]"
           style={{ inset: 0, top: 14, left: 6, right: 6, background: "#242420", border: "0.5px solid rgba(247,245,240,0.08)" }}

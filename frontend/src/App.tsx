@@ -16,11 +16,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#15150F] flex flex-col items-center py-6 px-4">
-      <div className="w-full max-w-[390px]">
+    <div className="h-dvh w-full bg-[#15150F] flex flex-col items-center overflow-hidden">
+      <div className="w-full max-w-[430px] h-full flex flex-col px-4 pt-4 pb-2">
         <IdeaBanner idea={idea} />
         <PillSwitcher active={feed} onChange={setFeed} />
-        <CardStack feed={feed} />
+        <div className="flex-1 min-h-0">
+          <CardStack feed={feed} />
+        </div>
       </div>
     </div>
   );

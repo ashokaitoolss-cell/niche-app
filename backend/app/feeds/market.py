@@ -17,6 +17,9 @@ query NewLaunches {
         description
         url
         votesCount
+        thumbnail {
+          url
+        }
         topics {
           edges { node { name } }
         }
@@ -66,6 +69,7 @@ async def fetch_product_hunt(hours: int = 24) -> list[dict]:
                 "source": "Product Hunt",
                 "votes": node.get("votesCount", 0),
                 "topics": topics,
+                "image_url": (node.get("thumbnail") or {}).get("url"),
             }
         )
     return items
